@@ -1,0 +1,47 @@
+{
+    "metadata_tags": {
+        "exif": {
+            "DateTimeOriginal": "exif_DateTimeOriginal",
+            "ModifyDate": "exif_ModifyDate",
+            "Model": "exif_Model",
+            "CameraModelName": "exif_CameraModelName",
+            "ISO": "exif_ISO",
+            "Notes": "exif_Notes",
+            "ImageDescription": "exif_ImageDescription",
+            "UserComment": "exif_UserComment",
+            "GPSLongitude": "exif_GPSLongitude",
+            "GPSLatitude": "exif_GPSLatitude"
+        },
+        "iptc": {
+            "Sub-location": "iptc_Sub_Location",
+            "City": "iptc_City",
+            "Province-State": "iptc_Province_State",
+            "Country-PrimaryLocationName": "iptc_Country_PrimaryLocationName",
+            "Category": "iptc_Category",
+            "Headline": "iptc_Headline",
+            "Caption": "iptc_Caption",
+            "Source": "iptc_Source",
+            "Caption-Abstract": "iptc_Caption_Abstract",
+            "Notes": "iptc_Notes",
+            "FixtureIdentifier": "iptc_FixtureIdentifier",
+            "Contact": "iptc_Contact",
+            "Keywords": "iptc_Keywords"
+        },
+        "xmp": {
+            "Event": "xmp_Event",
+            "Location": "xmp_Location",
+            "Sub-location": "xmp_Sub_Location",
+            "City": "xmp_City",
+            "Province-State": "xmp_Province_State",
+            "Country-PrimaryLocationName": "xmp_Country_PrimaryLocationName",
+            "Description": "xmp_Description",
+            "UserComment": "xmp_UserComment",
+            "Keywords": "xmp_Keywords",
+            "People": "xmp_People",
+            "PersonInImage": "xmp_PersonInImage",
+            "TagsList": "xmp_TagsList",
+            "CatalogSets": "xmp_CatalogSets",
+            "HierarchicalSubject": "xmp_HierarchicalSubject"
+        }
+    }
+}
