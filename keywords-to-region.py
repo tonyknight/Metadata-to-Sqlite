@@ -2,11 +2,10 @@ import os
 import sys
 import json
 import sqlite3
-import re
 import subprocess
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QFileDialog, QMessageBox, QPushButton, QProgressBar
 from PyQt5.QtCore import Qt
-from tqdm import tqdm
+
 
 
 class PhotoMetadataDatabase(QMainWindow):
@@ -58,14 +57,6 @@ class PhotoMetadataDatabase(QMainWindow):
             self.create_db_button.setEnabled(True)
 
     def start_database_creation(self):
-        # Define a callback function to update the progress bar
-        def progress_callback(percentage, status):
-            self.progress_bar.setValue(percentage)
-            self.progress_bar.setFormat(status)
-
-        # get the metadata for all photos in the folder
-        cmd = self._get_exiftool_command()
-        metadata_json = self._run_exiftool_command(cmd, progress_callback=progress_callback)
 
         # get the metadata for all photos in the folder
         cmd = self._get_exiftool_command()
@@ -95,7 +86,7 @@ class PhotoMetadataDatabase(QMainWindow):
         # insert the metadata into the database
         self._insert_metadata_into_database(metadata)
 
-    def _run_exiftool_command(self, cmd, progress_callback=None):
+    def _run_exiftool_command(self, cmd):
         command_file_path = os.path.join(self.photo_folder, "exiftool_command.txt")
         with open(command_file_path, "w") as f:
             f.write(" ".join(cmd))
@@ -106,36 +97,8 @@ class PhotoMetadataDatabase(QMainWindow):
         print("Exiftool command: ", exiftool_command)
 
         try:
-            # Use Popen instead of check_output to get the process object
-            process = subprocess.Popen(
-                exiftool_command,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                shell=True,
-                universal_newlines=True
-            )
-
-            # Use tqdm to wrap the output and provide a progress bar
-            with tqdm(total=100, file=sys.stdout, desc="Processing photos") as pbar:
-                for line in process.stdout:
-                    # Update the progress bar if the line contains a percentage
-                    if " %" in line:
-                        percentage = int(line.split(" %")[0].split(" ")[-1])
-                        status = line.strip()
-                        pbar.update(percentage - pbar.n)
-                        pbar.set_description(status)
-                        if progress_callback is not None:
-                            progress_callback(percentage, status)
-
-            # Check if the process exited successfully
-            if process.returncode != 0:
-                error_message = f"Error running Exiftool command: {process.stderr.read()}"
-                with open(os.path.join(self.photo_folder, "errors.txt"), "a") as f:
-                    f.write(error_message + "\n")
-                QMessageBox.critical(self, "Error", error_message)
-                return None
-
-            metadata_json_str = process.communicate()[0]
+            metadata_json_bytes = subprocess.check_output(exiftool_command, shell=True)
+            metadata_json_str = metadata_json_bytes.decode("utf-8")
             metadata_json = json.loads(metadata_json_str)
             with open(os.path.join(self.photo_folder, "metadata.json"), "w") as f:
                 json.dump(metadata_json, f)
@@ -219,23 +182,17 @@ class PhotoMetadataDatabase(QMainWindow):
         column_names = [description[0] for description in c.description]
 
         # Loop through the metadata and insert it into the SQLite database
-        self.progress_bar.setMaximum(len(metadata))
-        for i, photo_metadata in enumerate(tqdm(metadata)):
+        for photo_metadata in metadata:
             # Get the values from the photo_metadata dictionary
             values = []
-            problematic_tags = []
             for group, tags in metadata_tags.items():
                 for tag in tags:
                     column_name = f"{group}_{tag}"
                     sanitized_tag = tag.replace("-", "_")
                     value = photo_metadata.get(sanitized_tag, "")
                     if isinstance(value, str):
-                        # Replace illegal characters in the value with underscores
-                        value = re.sub(r"[^\w\d_]+", "_", value)
-                        if value != photo_metadata.get(sanitized_tag, ""):
-                            problematic_tags.append(sanitized_tag)
+                        value = value.strip()
                     values.append(value)
-
             # Append the SourceFile value to the values list
             values.insert(0, photo_metadata["SourceFile"])
 
@@ -249,13 +206,10 @@ class PhotoMetadataDatabase(QMainWindow):
                 error_message = f"Error inserting metadata into database: {e}"
                 with open(os.path.join(self.photo_folder, "errors.txt"), "a") as f:
                     f.write(error_message + "\n")
-                    f.write(f"Problematic tags: {problematic_tags}\n")
                 print(f"Error: {error_message}")
                 print(
                     f"SQL statement: INSERT INTO photo_metadata ({column_names}) VALUES ({','.join(['?'] * len(column_names))})")
                 continue
-
-            self.progress_bar.setValue(i + 1)
 
         # Commit the changes and close the connection
         conn.commit()
