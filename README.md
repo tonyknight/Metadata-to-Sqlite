@@ -6,7 +6,7 @@ Creates a sqlite database using metadata extracted from photos using exiftool.
 - Check to make sure all the Region tags are in db.
 
 ## Data Clean up
-To make sure the database is as clean as possible, use these exiftools commands to sanitiset the data:
+To make sure the database is as clean as possible, use these exiftools commands to sanitize the data:
 
 - Clear region fields if no region rectangle is in the photo metadata:
 ```exiftool -if 'not $RegionRectangle' -RegionPersonDisplayName= -RegionType= -RegionName= -ext jpg -ext png -ext tiff -overwrite_original dir/```
