@@ -41,7 +41,15 @@
             "PersonInImage": ["text", "xmp_PersonInImage"],
             "TagsList": ["text", "xmp_TagsList"],
             "CatalogSets": ["text", "xmp_CatalogSets"],
-            "HierarchicalSubject": ["text", "xmp_HierarchicalSubject"]
+            "HierarchicalSubject": ["text", "xmp_HierarchicalSubject"],
+            "RegionAppliedToDimensions": ["text", "xmp_RegionAppliedToDimensions"],
+            "RegionArea": ["text", "xmp_RegionArea"],
+            "RegionExtensions": ["text", "xmp_RegionExtensions"],
+            "RegionName": ["text", "xmp_RegionName"],
+            "RegionPersonDisplayName": ["text", "xmp_RegionPersonDisplayName"],
+            "RegionRectangle": ["text", "xmp_RegionRectangle"],
+            "RegionType": ["text", "xmp_RegionType"],
+            "RegionUnit": ["text", "xmp_RegionUnit"]
         }
     }
 }

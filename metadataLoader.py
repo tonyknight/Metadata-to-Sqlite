@@ -66,7 +66,7 @@ class MetadataLoader:
 
         exclude_file_types = [".txt", ".csv", ".db", ".args", ".json"]
         exclude_filter = " ".join([f"--ext {file_type}" for file_type in exclude_file_types])
-        command = ['exiftool', '-r', '-progress', '-j', exclude_filter, metadata_tags_str, f'"{self.photo_folder}"']
+        command = ['exiftool', '-m 2000m', '-r', '-progress', '-j', exclude_filter, metadata_tags_str, f'"{self.photo_folder}"']
 
         command_file_path = os.path.join(self.photo_folder, "exiftool_command.txt")
         with open(command_file_path, "w") as f:
