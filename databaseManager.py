@@ -63,7 +63,9 @@ class DatabaseManager:
             for tag in tags:
                 sanitized_tag = tag.replace("-", "_")
                 value = photo_metadata.get(sanitized_tag, "")
-                if isinstance(value, str):
+                if isinstance(value, list):
+                    value = ', '.join(value)  # This converts the list. Replace '|' with your chosen delimiter
+                elif isinstance(value, str):
                     value = value.strip()
                 values.append(value)
         return values
