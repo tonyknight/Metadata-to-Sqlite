@@ -58,11 +58,14 @@ class DatabaseManager:
         return column_names
 
     def prepare_metadata_values(self, photo_metadata, metadata_tags):
-        values = [str(photo_metadata["SourceFile"])]
+        # Replace hyphens with underscores in the tag names of photo_metadata
+        sanitized_photo_metadata = {k.replace("-", "_"): v for k, v in photo_metadata.items()}
+
+        values = [str(sanitized_photo_metadata["SourceFile"])]
         for group, tags in metadata_tags.items():
             for tag in tags:
                 sanitized_tag = tag.replace("-", "_")
-                value = photo_metadata.get(sanitized_tag, "")
+                value = sanitized_photo_metadata.get(sanitized_tag, "")
                 if isinstance(value, list):
                     value = ', '.join(value)  # This converts the list. Replace '|' with your chosen delimiter
                 elif isinstance(value, str):

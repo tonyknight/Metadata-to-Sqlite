@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+import re
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QFileDialog, QMessageBox, QPushButton, QProgressBar
@@ -55,9 +56,28 @@ class PhotoMetadataDatabase(QMainWindow):
         file, _ = QFileDialog.getOpenFileName(self, "Open JSON File", "", "JSON Files (*.json);;All Files (*)",
                                               options=options)
         if file:
+            # Rename the original JSON file
+            original_file = os.path.splitext(file)[0] + "_original.json"
+            os.rename(file, original_file)
+
+            # Sanitize the JSON file
+            try:
+                self.sanitize_json_tags(original_file, file)
+                QMessageBox.information(self, "Success", "Hyphens in tag names have been replaced with underscores.")
+            except Exception as e:
+                QMessageBox.critical(self, "Error", f"An error occurred during JSON sanitization: {e}")
+                return
+
             self.json_file = file
             self.folder_label.setText(self.json_file)
             self.create_db_button.setEnabled(True)
+
+
+    def sanitize_json_tags(self, file_path, output_file_path):
+        with open(file_path, 'r') as infile, open(output_file_path, 'w') as outfile:
+            for line in infile:
+                outfile.write(
+                    re.sub(r'("[-A-Za-z0-9]+)-([A-Za-z0-9]+":)', lambda m: m.group(1) + '_' + m.group(2), line))
 
     def select_folder(self):
         options = QFileDialog.Options()
